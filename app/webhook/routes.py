@@ -24,12 +24,12 @@ def pull():
         to_branch= val['pull_request']['head']['ref']
 
 
-        if val['action'] == 'opened' and val['pull_request']['merged']==False:
+        if val['action'] == 'opened':
             action="PULL REQUEST"
             pullvar.insert_one({'request_id':request_id,'author':author,'action':action,'from_branch':from_branch,'to_branch':to_branch,'timestamp':timestamp})
 
 
-        if  val['action'] == 'closed' and val['pull_request']['merged']==True:
+        if  val['pull_request']['merged']==True:
             action="MERGE"
             print("MERDEDDDDD")
             pullvar.insert_one({'request_id':request_id,'author':author,'action':action,'from_branch':from_branch,'to_branch':to_branch,'timestamp':timestamp})
