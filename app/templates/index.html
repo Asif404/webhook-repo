@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>CodePen - CSS Timeline for Giggles</title>
+  <link rel="stylesheet" href="{{ url_for ('static' ,filename='style.css') }}">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div id="timeline-content">
+  <h1>Webhook</h1>
+<ul class="timeline" id="list">
+  </ul>
+</div>
+<!-- partial -->
+<script>
+  function refreshh(){
+
+    let request = new Request('/webhook/list');
+      fetch(request).then(response => response.json()).then(function (data) {
+          let data_table = document.getElementById("list");
+          console.log(data[''])
+          data_table.innerHTML = "";
+          for (let d in data) {
+
+            if (data[d]['action']=='PUSH'){
+              data_table.innerHTML += `<li class="event" data-date="${data[d]['action']}">
+        <p> ${data[d]['author']} pushed to ${data[d]['from_branch']} on ${data[d]['timestamp']}</p>
+      </li>`
+            }
+
+
+            if (data[d]['action']=='PULL REQUEST'){
+              data_table.innerHTML += `<li class="event" data-date="${data[d]['action']}">
+        <p> ${data[d]['author']} submitted a pull request from ${data[d]['from_branch']} to ${data[d]['to_branch']} on ${data[d]['timestamp']}</p>
+      </li>`
+            }
+
+            
+            if (data[d]['action']=='MERGE'){
+              data_table.innerHTML += `<li class="event" data-date="${data[d]['action']}">
+        <p> ${data[d]['author']} merged branch from ${data[d]['from_branch']} to ${data[d]['to_branch']} on ${data[d]['timestamp']}</p>
+      </li>`
+            }
+          }
+      });
+      setTimeout(refreshh, 15000);
+  }
+refreshh()
+  
+</script>
+</body>
+</html>
