@@ -20,7 +20,7 @@
     let request = new Request('/webhook/list');
       fetch(request).then(response => response.json()).then(function (data) {
           let data_table = document.getElementById("list");
-          console.log(data[''])
+          
           data_table.innerHTML = "";
           for (let d in data) {
 
