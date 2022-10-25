@@ -1,10 +1,11 @@
-import collections
+
 import datetime
 from textwrap import indent
 from time import time
 from typing import Collection
-from flask import Blueprint, json, request,render_template
-from bson.json_util import dumps
+from flask import Blueprint,request
+
+import pymongo
 from ..extensions import mongo
 
 webhook = Blueprint('Webhook', __name__, url_prefix='/webhook')
@@ -13,28 +14,41 @@ webhook = Blueprint('Webhook', __name__, url_prefix='/webhook')
  #endpoint for pull-request
 @webhook.route('/pullrequest', methods=["POST"])
 def pull():
+
     timestamp =datetime.datetime.utcnow().strftime("%d %B %Y - %I:%M%p UTC")
 
-    if request.headers['Content-Type'] =='application/json':
-        val =request.json
-        request_id= str(val['repository']['id'])
-        author= val['pull_request']['base']['user']['login']
-        pullvar=mongo.db.webhook
-        from_branch= val['pull_request']['base']['ref']
-        to_branch= val['pull_request']['head']['ref']
+    #checking if the request content_typer is application/json
+    if (request.headers['Content-Type'] =='application/json'):
+
+        #convert request to json
+        req =request.json
+
+        #from request body extract the required data
+        request_id= str(req['repository']['id'])
+        author= req['pull_request']['base']['user']['login']
+        to_branch= req['pull_request']['base']['ref']
+        from_branch= req['pull_request']['head']['ref']
+
+        #connect to database
+        pullreq=mongo.db.webhook
 
 
-        if val['action'] == 'opened':
+        #check if action type is 'opened' 
+        if req['action'] == 'opened':
             action="PULL REQUEST"
-            pullvar.insert_one({'request_id':request_id,'author':author,'action':action,'from_branch':from_branch,'to_branch':to_branch,'timestamp':timestamp})
 
+            #insert data into database
+            pullreq.insert_one({'request_id':request_id,'author':author,'action':action,'from_branch':from_branch,'to_branch':to_branch,'timestamp':timestamp})
 
-        if  val['pull_request']['merged']==True:
+        #check if it's megre 
+        if  req['pull_request']['merged']==True:
             action="MERGE"
-            print("MERDEDDDDD")
-            pullvar.insert_one({'request_id':request_id,'author':author,'action':action,'from_branch':from_branch,'to_branch':to_branch,'timestamp':timestamp})
 
-    return "200"
+            #insert data into database
+            pullreq.insert_one({'request_id':request_id,'author':author,'action':action,'from_branch':from_branch,'to_branch':to_branch,'timestamp':timestamp})
+
+    #return error message
+    return "ERROR: Content-type should be application/json"
 
 #endpoint for push request
 @webhook.route('/pushrequest', methods=["POST"])
@@ -42,28 +56,33 @@ def push():
     
     timestamp =datetime.datetime.utcnow().strftime("%d %B %Y - %I:%M%p UTC")
 
-
+    #checking if the request content_typer is application/json
     if request.headers['Content-Type'] =='application/json':
-        val =request.json     
-        request_id= val['after']
-        author= val['commits'][0]['author']['username']
-        branch=val['ref']
+
+        #convert request to json
+        req =request.json
+
+        #from request body extract the required data     
+        request_id= req['after']
+        author= req['commits'][0]['author']['username']
+        branch=req['ref']
         from_branch=branch.split('/')[2]
         action="PUSH"
         to_branch="null"
-        pushvar=mongo.db.webhook
-        pushvar.insert_one({'request_id':request_id,'author':author,'action':action,'from_branch':from_branch,'to_branch':to_branch,"timestamp":timestamp})
-        return "200"
+
+        #connect to database
+        pushreq=mongo.db.webhook
+
+        #insert data into database
+        pushreq.insert_one({'request_id':request_id,'author':author,'action':action,'from_branch':from_branch,'to_branch':to_branch,"timestamp":timestamp})
         
-
-@webhook.route('/')
-def home():
-    return render_template('index.html')
+    #return error message
+    return "ERROR: Content-type should be application/json"   
 
 
-@webhook.route('/list')
-def sendlist():
-    collections=mongo.db.webhook.find()
-    return dumps(collections)
+
+
+
     
+
 

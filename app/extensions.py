@@ -1,6 +1,4 @@
 from flask_pymongo import PyMongo
 
-# Setup MongoDB here
-
-
+# Setup MongoDB 
 mongo = PyMongo()

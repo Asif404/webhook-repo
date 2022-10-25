@@ -17,7 +17,7 @@
 <script>
   function refreshh(){
 
-    let request = new Request('/webhook/list');
+    let request = new Request('/webview/api');
       fetch(request).then(response => response.json()).then(function (data) {
           let data_table = document.getElementById("list");
           console.log(data[''])
