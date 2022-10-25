@@ -12,6 +12,7 @@ def home():
 
     return render_template('index.html')
 
+
 #api to fetch details from database
 @webview.route('/api')
 def sendlist():
