@@ -1,11 +1,6 @@
 
 import datetime
-from textwrap import indent
-from time import time
-from typing import Collection
 from flask import Blueprint,request
-
-import pymongo
 from ..extensions import mongo
 
 webhook = Blueprint('Webhook', __name__, url_prefix='/webhook')
