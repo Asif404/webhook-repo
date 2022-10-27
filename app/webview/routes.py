@@ -15,8 +15,8 @@ def home():
 
 #api to fetch details from database
 @webview.route('/api')
-def sendlist():
+def sendata():
 
     #get latest 5 data from database
-    collections=mongo.db.webhook.find().sort("_id",pymongo.DESCENDING).limit(5)
+    collections=mongo.db.webhook.find().sort("_id",pymongo.DESCENDING).limit(5)  #pymongo.DESCENDING
     return dumps(collections)
