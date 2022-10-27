@@ -10,7 +10,7 @@ Clone this repository
 
 Use any virtual environment of your choice. 
 
-`pip3 install requirements.txt`
+`pip3 install -r requirements.txt`
 
 Configure your database uri inside `/app/__ini__.py` file 
 
